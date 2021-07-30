@@ -1,21 +1,37 @@
 package org.firstinspires.ftc.teamcode.SkystoneCode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="SingleMotorTest")
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+@TeleOp(name="GyroTest")
 public class SingleMotorTest extends OpMode {
 
-    DcMotor rightMotor;
+    BNO055IMU gyroSensor;
 
     @Override
     public void init() {
-        rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
+        gyroSensor = hardwareMap.get(BNO055IMU.class, "gyroSensor");
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        gyroSensor.initialize(parameters);
     }
 
     @Override
     public void loop() {
-        rightMotor.setPower(0.5);
+        Orientation heading = gyroSensor.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+        telemetry.addData("x", heading.firstAngle);
+        telemetry.addData("y", heading.secondAngle);
+        telemetry.addData("z", heading.thirdAngle);
     }
 }
